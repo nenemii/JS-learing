@@ -146,6 +146,11 @@ class EventEmitter{
     return (this._events.get(event) || []).length;
   }
 }
+
+
+
+
+
 function Event() {
   // 键=事件名（字符串），值=回调函数数组
   const events = new Map();
@@ -293,5 +298,37 @@ Function.prototype.myBind = function(ctx,...args){
 }
 
 // 浅拷贝
-
+function shallowClone(obj){
+  if(typeof obj !== 'object' || obj === null){
+    return obj;
+  }
+  if(Array.isArray(obj)){
+    return obj.slice();
+  }
+  const proto = Object.getPrototypeOf(obj);
+  const cloneObj = Object.create(proto);
+  return Object.assign(cloneObj,obj);
+}
 // 深拷贝
+function deepClone(obj, map = new Map() ){
+  if(obj === null || typeof obj !== 'object'){
+    return obj;
+  }
+  if(map.has(obj)){
+    return map.get(obj);
+  }
+  let copy;
+  if(Array.isArray(obj)){
+    copy = [];
+  }
+  else{
+    copy = {};
+  }
+  map.set(obj,copy);
+
+  Reflect.ownKeys(obj).forEach(key =>{
+    copy[key] = deepClone(obj[key], map);
+  });
+  
+  return copy;
+}
