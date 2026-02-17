@@ -28,12 +28,8 @@ function unique2(arr) {
 }
 // foreach遍历，不返回新数组
 Array.prototype.myForEach = function(callback,thisArg){
-  if(this === null){
-    return new TypeError('this is null');
-  }
-  if(typeof callback !== 'function'){
-    return new TypeError('callback is not a function');
-  }
+  if (this == null) throw new TypeError('this is null or undefined');
+  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
   const O = Object(this);
   const len = O.length >>> 0;
   for(let i=0;i<len;i++){
@@ -45,12 +41,8 @@ Array.prototype.myForEach = function(callback,thisArg){
 
 // map遍历数组，要返回新数组
 Array.prototype.myMap = function(callback,thisArg){
-  if(this === null){
-    return new TypeError('this is null');
-  }
-  if(typeof callback !== 'function'){
-    return new TypeError('callback is not a function');
-  }
+  if (this == null) throw new TypeError('this is null or undefined');
+  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
   const O = Object(this);
   const len = O.length >>> 0;
   const A = new Array(len);
@@ -60,4 +52,45 @@ Array.prototype.myMap = function(callback,thisArg){
     }
   }
   return A;
+}
+
+// filter遍历数组，返回新数组，保留回调为真值的元素
+Array.prototype.myFilter = function(callback,thisArg){
+  if (this == null) throw new TypeError('this is null or undefined');
+  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
+  const O = Object(this);
+  const len = O.length >>> 0;
+  const res = [];
+  for(let i=0;i<len;i++){
+    if(i in O){
+      const val = O[i];
+      if(callback.call(thisArg,val,i,O)) res.push(val);
+    }
+  }
+  return res;
+}
+
+// reduce叠加
+Array.prototype.myReduce = function(callback, initialValue){
+  if (this == null) throw new TypeError('this is null or undefined');
+  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
+  const O = Object(this);
+  const len = O.length >>> 0;
+  let k = 0;
+  let accumulator;
+  if (arguments.length >= 2) {
+    accumulator = initialValue;
+  } else {
+    // find first present element
+    while(k < len && !(k in O)) k++;
+    if (k >= len) throw new TypeError('Reduce of empty array with no initial value');
+    accumulator = O[k++];
+  }
+  while(k < len){
+    if(k in O){
+      accumulator = callback(accumulator, O[k], k, O);
+    }
+    k++;
+  }
+  return accumulator;
 }
